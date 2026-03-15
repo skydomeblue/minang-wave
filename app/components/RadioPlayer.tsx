@@ -18,13 +18,54 @@ export default function RadioPlayer() {
   const [volume, setVolume] = useState(0.7);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [retry, setRetry] = useState(0);
+
+  const [stationStatus, setStationStatus] = useState<Record<number, boolean>>(
+    {}
+  );
 
   const MAX_RETRY = 5;
+
+  const retryRef = useRef(0);
+  const retryTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // cek stream station
+  const checkStations = async () => {
+    const results: Record<number, boolean> = {};
+
+    await Promise.all(
+      stations.map(
+        (station) =>
+          new Promise<void>((resolve) => {
+            const testAudio = new Audio();
+            testAudio.src = station.stream;
+
+            const timeout = setTimeout(() => {
+              results[station.id] = false;
+              resolve();
+            }, 5000);
+
+            testAudio.addEventListener("canplay", () => {
+              clearTimeout(timeout);
+              results[station.id] = true;
+              resolve();
+            });
+
+            testAudio.addEventListener("error", () => {
+              clearTimeout(timeout);
+              results[station.id] = false;
+              resolve();
+            });
+          })
+      )
+    );
+
+    setStationStatus(results);
+  };
 
   // load pertama
   useEffect(() => {
     loadStation(currentStation, false);
+    checkStations();
   }, []);
 
   // volume
@@ -50,7 +91,7 @@ export default function RadioPlayer() {
     audio.currentTime = 0;
 
     setError("");
-    setRetry(0);
+    retryRef.current = 0;
     setIsLoading(true);
 
     audio.src = station.stream;
@@ -80,30 +121,20 @@ export default function RadioPlayer() {
     }
   };
 
-  const retryRef = useRef(0);
-  const retryTimerRef = useRef<NodeJS.Timeout | null>(null);
-
   const reconnect = () => {
     if (!audioRef.current) return;
 
-    console.log("retry:", retryRef.current);
-
     if (retryRef.current >= MAX_RETRY) {
-      console.log("stream sedang offline");
-
       setError("Stream tidak tersedia");
       setIsLoading(false);
       setIsPlaying(false);
 
-      // stop timer
       if (retryTimerRef.current) {
         clearTimeout(retryTimerRef.current);
         retryTimerRef.current = null;
       }
 
-      // reset retry
       retryRef.current = 0;
-
       return;
     }
 
@@ -115,10 +146,15 @@ export default function RadioPlayer() {
   };
 
   const changeStation = (station: Station) => {
+    const isOnline = stationStatus[station.id];
+
+    if (!isOnline) return;
+
     const autoplay = isPlaying;
 
     setIsPlaying(true);
     setCurrentStation(station);
+
     loadStation(station, autoplay);
   };
 
@@ -143,21 +179,44 @@ export default function RadioPlayer() {
 
       <div className="gap-3 mb-2 max-w-lg flex flex-col w-full">
         <span className="text-sm">Station List</span>
+
         {stations.map((station) => {
           const isActive = station.id === currentStation.id;
+          const isOnline = stationStatus[station.id] !== false;
+
           return (
             <button
               key={station.id}
+              disabled={!isOnline}
               onClick={() => changeStation(station)}
-              className={`p-3 rounded-lg flex items-center justify-between gap-3 cursor-pointer transition-all duration-300
-                ${isActive ? "bg-green-500 text-white" : "bg-white hover:scale-[102%]"}`}
+              className={`p-3 rounded-lg flex items-center justify-between gap-3 transition-all duration-300
+              
+              ${
+                !isOnline
+                  ? "bg-red-100 text-red-500 cursor-not-allowed"
+                  : isActive
+                  ? "bg-green-500 text-white"
+                  : "bg-white hover:scale-[102%]"
+              }`}
             >
               <div className="flex items-center">
-                <img src={`/img/${station.logo}`} className="w-8 h-8 rounded" />
-                <span className="text-sm flex-1 ml-3">{station.name}</span>
+                <img
+                  src={`/img/${station.logo}`}
+                  className="w-8 h-8 rounded"
+                />
+
+                <span className="text-sm flex-1 ml-3">
+                  {station.name}
+                </span>
+
+                {!isOnline && (
+                  <span className="text-xs ml-2 text-red-600">
+                    OFFLINE
+                  </span>
+                )}
               </div>
 
-              {isActive && (
+              {isActive && isOnline && (
                 <div className="flex items-center gap-1">
                   <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
                   <span className="text-xs">NOW</span>
@@ -177,7 +236,7 @@ export default function RadioPlayer() {
             className="w-12 h-12 mx-auto rounded-lg"
           />
 
-          <div className="w-full px-4 flex flex-col transition-all duration-800">
+          <div className="w-full px-4 flex flex-col">
             <span className="font-bold">{currentStation.name}</span>
 
             <div className="flex gap-2 items-center">
@@ -199,21 +258,17 @@ export default function RadioPlayer() {
               {error && (
                 <>
                   <div className="w-2 h-2 rounded-full bg-red-700 animate-pulse" />
-                  <span className="text-[13px] text-red-700">{error}</span>
+                  <span className="text-[13px] text-red-700">
+                    {error}
+                  </span>
                 </>
-              )}
-
-              {retry > 0 && retry < MAX_RETRY && (
-                <p className="text-orange-400 text-sm">
-                  Reconnecting ({retry}/{MAX_RETRY})
-                </p>
               )}
             </div>
           </div>
 
           <button
             onClick={togglePlay}
-            className={` cursor-pointer p-6 text-white rounded-full relative flex items-center justify-center bg-[#F94864]`}
+            className="cursor-pointer p-6 text-white rounded-full relative flex items-center justify-center bg-[#F94864]"
           >
             {/* PLAY */}
             <svg
@@ -222,7 +277,11 @@ export default function RadioPlayer() {
               viewBox="0 0 24 24"
               strokeWidth={2}
               stroke="currentColor"
-              className={`size-6 absolute transition-all duration-300 ${isPlaying ? "opacity-0 scale-75" : "opacity-100 scale-100"}`}
+              className={`size-6 absolute transition-all duration-300 ${
+                isPlaying
+                  ? "opacity-0 scale-75"
+                  : "opacity-100 scale-100"
+              }`}
             >
               <path
                 strokeLinecap="round"
@@ -239,7 +298,11 @@ export default function RadioPlayer() {
               strokeWidth={2}
               stroke="currentColor"
               className={`size-6 absolute transition-all duration-300 
-                ${isPlaying ? "opacity-100 scale-100" : "opacity-0 scale-75"}`}
+              ${
+                isPlaying
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-75"
+              }`}
             >
               <path
                 strokeLinecap="round"
