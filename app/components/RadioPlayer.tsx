@@ -53,7 +53,7 @@ export default function RadioPlayer() {
     setRetry(0);
     setIsLoading(true);
 
-    audio.src = station.stream + "?t=" + Date.now();
+    audio.src = station.stream;
     audio.load();
 
     if (autoplay) {
@@ -80,26 +80,44 @@ export default function RadioPlayer() {
     }
   };
 
+  const retryRef = useRef(0);
+  const retryTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const reconnect = () => {
     if (!audioRef.current) return;
 
-    if (retry >= MAX_RETRY) {
+    console.log("retry:", retryRef.current);
+
+    if (retryRef.current >= MAX_RETRY) {
+      console.log("stream sedang offline");
+
       setError("Stream tidak tersedia");
       setIsLoading(false);
       setIsPlaying(false);
+
+      // stop timer
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
+
+      // reset retry
+      retryRef.current = 0;
+
       return;
     }
 
-    setRetry((r) => r + 1);
+    retryRef.current += 1;
 
-    setTimeout(() => {
+    retryTimerRef.current = setTimeout(() => {
       audioRef.current?.play().catch(() => reconnect());
-    }, 3000);
+    }, 1000);
   };
 
   const changeStation = (station: Station) => {
     const autoplay = isPlaying;
 
+    setIsPlaying(true);
     setCurrentStation(station);
     loadStation(station, autoplay);
   };
@@ -178,7 +196,12 @@ export default function RadioPlayer() {
                   </>
                 ))}
 
-              {error && <p className="text-red-400 text-sm">{error}</p>}
+              {error && (
+                <>
+                  <div className="w-2 h-2 rounded-full bg-red-700 animate-pulse" />
+                  <span className="text-[13px] text-red-700">{error}</span>
+                </>
+              )}
 
               {retry > 0 && retry < MAX_RETRY && (
                 <p className="text-orange-400 text-sm">
