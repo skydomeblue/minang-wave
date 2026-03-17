@@ -35,9 +35,16 @@ export const stations = [
     nowPlayingApi: "",
   },
   {
-    id: 5,
+    id: 6,
     name: "Firza Radio Padang",
     stream: "https://stream.zeno.fm/5k7g2w3gtkeuv",
+    logo: "/radio.png",
+    nowPlayingApi: "",
+  },
+  {
+    id: 7,
+    name: "Rumah Gadang Saiyo",
+    stream: "https://stream.zeno.fm/nuhda9xayrbtv",
     logo: "/radio.png",
     nowPlayingApi: "",
   },
