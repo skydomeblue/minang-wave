@@ -229,7 +229,6 @@ export default function RadioPlayer() {
         {/* PLAYER (tetap di bawah) */}
         <div className="fixed bottom-0 left-0 w-full flex justify-center p-3 bg-transparent z-50">
           <div className="bg-white w-full max-w-lg p-3 rounded-full flex flex-col gap-2 border border-[#e7e5e4] shadow-lg">
-
             <div className="flex items-center h-full">
               <img
                 src={`/img/${currentStation.logo}`}
@@ -300,7 +299,7 @@ export default function RadioPlayer() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M15.75 5.25v13.5m-7.5-13.5v13.5"
+                    d="M5.25 7.5A2.25 2.25 0 0 1 7.5 5.25h9a2.25 2.25 0 0 1 2.25 2.25v9a2.25 2.25 0 0 1-2.25 2.25h-9a2.25 2.25 0 0 1-2.25-2.25v-9Z"
                   />
                 </svg>
               </button>
