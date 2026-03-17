@@ -27,4 +27,18 @@ export const stations = [
     logo: "/radio.png",
     nowPlayingApi: "",
   },
+  {
+    id: 5,
+    name: "Kiara IKIP Padang",
+    stream: "https://stream.zeno.fm/cn1fanz7hkeuv",
+    logo: "/radio.png",
+    nowPlayingApi: "",
+  },
+  {
+    id: 5,
+    name: "Firza Radio Padang",
+    stream: "https://stream.zeno.fm/5k7g2w3gtkeuv",
+    logo: "/radio.png",
+    nowPlayingApi: "",
+  },
 ];
