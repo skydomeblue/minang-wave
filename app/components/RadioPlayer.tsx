@@ -23,6 +23,11 @@ export default function RadioPlayer() {
     {},
   );
 
+  const [isCheckingStations, setIsCheckingStations] = useState(true);
+
+  // NEW
+  const [showPlayer, setShowPlayer] = useState(false);
+
   const MAX_RETRY = 5;
 
   const retryRef = useRef(0);
@@ -30,6 +35,8 @@ export default function RadioPlayer() {
 
   // cek stream station
   const checkStations = async () => {
+    setIsCheckingStations(true);
+
     const results: Record<number, boolean> = {};
 
     await Promise.all(
@@ -60,11 +67,25 @@ export default function RadioPlayer() {
     );
 
     setStationStatus(results);
+    setIsCheckingStations(false);
   };
 
   // load pertama
   useEffect(() => {
-    loadStation(currentStation, false);
+    const savedStation = localStorage.getItem("lastStation");
+
+    if (savedStation) {
+      const parsed = JSON.parse(savedStation);
+
+      setCurrentStation(parsed);
+      setShowPlayer(true);
+
+      loadStation(parsed, false);
+    } else {
+      // pertama kali buka → player disembunyikan
+      setShowPlayer(false);
+    }
+
     checkStations();
   }, []);
 
@@ -155,6 +176,12 @@ export default function RadioPlayer() {
     setIsPlaying(true);
     setCurrentStation(station);
 
+    // simpan station terakhir
+    localStorage.setItem("lastStation", JSON.stringify(station));
+
+    // tampilkan player
+    setShowPlayer(true);
+
     loadStation(station, autoplay);
   };
 
@@ -175,67 +202,92 @@ export default function RadioPlayer() {
         onStalled={() => reconnect()}
       />
 
-      {/* WRAPPER biar bisa flex properly */}
-      <div className="flex flex-col w-full max-w-lg flex-1 min-h-0">
+      <div className="flex flex-col w-full max-w-md flex-1 min-h-0">
         {/* STATION LIST */}
         <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-1">
           <span className="text-sm sticky top-0 bg-[#f5f5f4] z-10">
             Station List
           </span>
 
-          {stations.map((station) => {
-            const isActive = station.id === currentStation.id;
-            const isOnline = stationStatus[station.id] !== false;
+          {isCheckingStations ? (
+            <>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="p-3 rounded-lg bg-white animate-pulse flex items-center gap-3"
+                >
+                  <div className="w-10 h-10 bg-gray-200 rounded" />
 
-            return (
-              <button
-                key={station.id}
-                disabled={!isOnline}
-                onClick={() => changeStation(station)}
-                className={`p-3 rounded-lg flex items-center justify-between gap-3 transition-all duration-300
-            
-            ${
-              !isOnline
-                ? "bg-red-100 text-red-500 cursor-not-allowed"
-                : isActive
-                  ? "bg-green-500 text-white"
-                  : "bg-white"
-            }`}
-              >
-                <div className="flex items-center">
-                  <img
-                    src={`/img/${station.logo}`}
-                    className="w-8 h-8 rounded"
-                  />
-
-                  <span className="text-sm flex-1 ml-3">{station.name}</span>
-
-                  {!isOnline && (
-                    <span className="text-xs ml-2 text-red-600">OFFLINE</span>
-                  )}
-                </div>
-
-                {isActive && isOnline && (
-                  <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
-                    <span className="text-xs">NOW</span>
+                  <div className="flex flex-col gap-1">
+                    <div className="h-3 w-43 bg-gray-200 rounded" />
+                    <div className="h-2 w-28 bg-gray-200 rounded" />
                   </div>
-                )}
-              </button>
-            );
-          })}
+                </div>
+              ))}
+            </>
+          ) : (
+            stations.map((station) => {
+              const isActive = station.id === currentStation.id;
+
+              const isOnline = stationStatus[station.id] !== false;
+
+              return (
+                <button
+                  key={station.id}
+                  disabled={!isOnline}
+                  onClick={() => changeStation(station)}
+                  className={`p-3 rounded-lg flex items-center justify-between gap-3 transition-all duration-300
+                  
+                  ${
+                    !isOnline
+                      ? "bg-white text-red-500 cursor-not-allowed"
+                      : isActive
+                        ? "bg-green-500 text-white"
+                        : "bg-white cursor-pointer"
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <img
+                      src={`/img/${station.logo}`}
+                      className="w-8 h-8 rounded"
+                    />
+
+                    <span className="text-sm flex-1 ml-3">{station.name}</span>
+                  </div>
+                  {!isOnline && (
+                    <span className="text-xs ml-2 text-red-600">Offline</span>
+                  )}
+
+                  {isActive && isOnline && (
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                      <span className="text-xs">Playing</span>
+                    </div>
+                  )}
+                </button>
+              );
+            })
+          )}
         </div>
 
-        {/* PLAYER (tetap di bawah) */}
-        <div className="fixed bottom-0 left-0 w-full flex justify-center p-3 bg-transparent z-50">
-          <div className="bg-white w-full max-w-lg p-3 rounded-full flex flex-col gap-2 border border-[#e7e5e4] shadow-lg">
+        {/* PLAYER */}
+        <div
+          className={`fixed bottom-0 left-0 w-full flex justify-center p-3 bg-transparent z-50
+          transition-all duration-500
+          ${
+            showPlayer
+              ? "translate-y-0 opacity-100"
+              : "translate-y-full opacity-0 pointer-events-none"
+          }`}
+        >
+          <div className="bg-white w-full max-w-md p-3 rounded-full flex flex-col gap-2 border border-[#e7e5e4] shadow-lg">
             <div className="flex items-center h-full">
               <img
-                src={`/img/${currentStation.logo}`}
-                className="w-12 h-12 mx-auto rounded-lg"
+                src={`/img/vinyl.png`}
+                className={`w-12 h-12 mx-auto rounded-lg animate-spin [animation-duration:3s] ${!isPlaying && "[animation-play-state:paused]"}`}
               />
 
-              <div className="w-full px-4 flex flex-col">
+              <div className="w-full px-3 flex flex-col">
                 <span className="font-bold">{currentStation.name}</span>
 
                 <div className="flex gap-2 items-center">
