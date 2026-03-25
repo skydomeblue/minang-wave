@@ -277,10 +277,12 @@ export default function RadioPlayer() {
                   }`}
                 >
                   <div className="flex items-center">
-                    <img
-                      src={`/img/${station.logo}`}
-                      className="w-8 h-8 rounded"
-                    />
+                    <div className="bg-white overflow-hidden rounded-full p-2">
+                      <img
+                        src={`/img/${station.logo}`}
+                        className="w-5 h-5"
+                      />
+                    </div>
 
                     <span className="text-sm flex-1 ml-3">{station.name}</span>
                   </div>
