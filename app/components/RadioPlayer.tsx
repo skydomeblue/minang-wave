@@ -190,7 +190,7 @@ export default function RadioPlayer() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f4] text-gray-800 flex flex-col items-center p-5">
+    <div className="min-h-screen bg-[#f5f5f4] text-gray-800 flex flex-col items-center">
       <audio
         ref={audioRef}
         onWaiting={() => setIsLoading(true)}
@@ -201,13 +201,43 @@ export default function RadioPlayer() {
         onError={() => reconnect()}
         onStalled={() => reconnect()}
       />
-
-      <div className="flex flex-col w-full max-w-md flex-1 min-h-0">
+      <div className="bg-white fixed z-50 flex w-full justify-center py-3 items-center gap-2">
+        <img src={`/img/podcast.png`} className="w-6" />
+        <span className=" font-bold text-lg text-[#376CFB]">Minang Wave</span>
+      </div>
+      <div className="flex flex-col w-full max-w-md flex-1 min-h-0 p-3 mt-14">
         {/* STATION LIST */}
         <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-1">
-          <span className="text-sm sticky top-0 bg-[#f5f5f4] z-10">
-            Station List
-          </span>
+          <div className="flex justify-between">
+            <span className="text-sm sticky top-0 bg-[#f5f5f4] z-10">
+              Station List
+            </span>
+            <button
+              onClick={checkStations}
+              disabled={isCheckingStations}
+              className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full duration-300 transition-all bg-[#F94864] text-white ${
+                isCheckingStations
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-[#F94864]/70 cursor-pointer"
+              }`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className={`w-4 h-4 ${isCheckingStations ? "animate-spin" : ""}`}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+              {isCheckingStations ? "Checking..." : "Refresh"}
+            </button>
+          </div>
 
           {isCheckingStations ? (
             <>
