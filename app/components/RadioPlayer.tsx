@@ -272,16 +272,13 @@ export default function RadioPlayer() {
                     !isOnline
                       ? "bg-white text-red-500 cursor-not-allowed"
                       : isActive
-                        ? "bg-green-500 text-white"
+                        ? "bg-green-500 text-white font-semibold"
                         : "bg-white cursor-pointer"
                   }`}
                 >
                   <div className="flex items-center">
                     <div className="bg-white overflow-hidden rounded-full p-2">
-                      <img
-                        src={`/img/${station.logo}`}
-                        className="w-5 h-5"
-                      />
+                      <img src={`/img/${station.logo}`} className="w-5 h-5" />
                     </div>
 
                     <span className="text-sm flex-1 ml-3">{station.name}</span>
