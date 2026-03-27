@@ -258,41 +258,113 @@ export default function RadioPlayer() {
           ) : (
             stations.map((station) => {
               const isActive = station.id === currentStation.id;
-
               const isOnline = stationStatus[station.id] !== false;
-
               return (
                 <button
                   key={station.id}
                   disabled={!isOnline}
                   onClick={() => changeStation(station)}
-                  className={`p-3 rounded-lg flex items-center justify-between gap-3 transition-all duration-300
-                  
+                  className={`rounded-lg flex items-center transition-all duration-300 overflow-hidden bg-green-500
                   ${
                     !isOnline
-                      ? "bg-white text-red-500 cursor-not-allowed"
+                      ? "bg-white text-red-500 cursor-not-allowed border border-transparent"
                       : isActive
-                        ? "bg-green-500 text-white font-semibold"
-                        : "bg-white cursor-pointer"
-                  }`}
+                        ? "border-2 border-green-500 font-semibold"
+                        : "bg-white cursor-pointer border-2 border-transparent"
+                  }
+                `}
                 >
-                  <div className="flex items-center">
-                    <div className="bg-white overflow-hidden rounded-full p-2">
-                      <img src={`/img/${station.logo}`} className="w-5 h-5" />
-                    </div>
-
-                    <span className="text-sm flex-1 ml-3">{station.name}</span>
+                  {/* icon play slide */}
+                  <div
+                    className={`flex items-center justify-center text-white transition-all duration-300 ease-out overflow-hidden 
+                                ${
+                                  isActive && isOnline
+                                    ? "w-14 opacity-100 translate-x-0 px-3"
+                                    : "w-0 opacity-0 -translate-x-3 px-0"
+                                }
+                              `}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="size-7"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                      />
+                    </svg>
                   </div>
-                  {!isOnline && (
-                    <span className="text-xs ml-2 text-red-600">Offline</span>
-                  )}
 
-                  {isActive && isOnline && (
-                    <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                      <span className="text-xs">Playing</span>
+                  {/* konten utama */}
+                  <div className="flex py-2 justify-between w-full px-2 bg-white items-center rounded-l-full">
+                    {/* kiri */}
+                    <div className="flex items-center">
+                      <div className="bg-white border border-[#376CFB] overflow-hidden rounded-full p-2">
+                        <img src={`/img/${station.logo}`} className="w-5 h-5" />
+                      </div>
+
+                      <span className="text-sm flex-1 ml-3">
+                        {station.name}
+                      </span>
                     </div>
-                  )}
+
+                    {/* offline text */}
+                    {!isOnline && (
+                      <span className="text-xs ml-2 text-red-500">Offline</span>
+                    )}
+
+                    {/* equalizer */}
+                    {isActive && isOnline && (
+                      <div className="flex items-center gap-1 ml-2">
+                        <div className="flex items-end gap-[3px] h-5">
+                          <span
+                            className={`
+              w-[3px] bg-green-500 rounded-full
+              animate-eq1
+              ${!isPlaying && "[animation-play-state:paused]"}
+            `}
+                          />
+
+                          <span
+                            className={`
+              w-[3px] bg-green-500 rounded-full
+              animate-eq2
+              ${!isPlaying && "[animation-play-state:paused]"}
+            `}
+                          />
+
+                          <span
+                            className={`
+              w-[3px] bg-green-500 rounded-full
+              animate-eq3
+              ${!isPlaying && "[animation-play-state:paused]"}
+            `}
+                          />
+
+                          <span
+                            className={`
+              w-[3px] bg-green-500 rounded-full
+              animate-eq2
+              ${!isPlaying && "[animation-play-state:paused]"}
+            `}
+                          />
+
+                          <span
+                            className={`
+              w-[3px] bg-green-500 rounded-full
+              animate-eq1
+              ${!isPlaying && "[animation-play-state:paused]"}
+            `}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </button>
               );
             })
