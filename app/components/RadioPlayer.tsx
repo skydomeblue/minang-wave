@@ -207,7 +207,7 @@ export default function RadioPlayer() {
       </div>
       <div className="flex flex-col w-full max-w-md flex-1 min-h-0 p-3 mt-14">
         {/* STATION LIST */}
-        <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-1">
+        <div className="flex flex-col gap-2 flex-1 overflow-y-auto pr-1">
           <div className="flex justify-between">
             <span className="text-sm sticky top-0 bg-[#f5f5f4] z-10">
               Station List
@@ -374,23 +374,43 @@ export default function RadioPlayer() {
         {/* PLAYER */}
         <div
           className={`fixed bottom-0 left-0 w-full flex justify-center p-3 bg-transparent z-50
-          transition-all duration-500
-          ${
-            showPlayer
-              ? "translate-y-0 opacity-100"
-              : "translate-y-full opacity-0 pointer-events-none"
-          }`}
+  transition-all duration-500
+  ${
+    showPlayer
+      ? "translate-y-0 opacity-100"
+      : "translate-y-full opacity-0 pointer-events-none"
+  }`}
         >
           <div className="bg-white w-full max-w-md p-3 rounded-full flex flex-col gap-2 border border-[#e7e5e4] shadow-lg">
             <div className="flex items-center h-full">
+              {/* vinyl */}
               <img
                 src={`/img/vinyl.png`}
-                className={`w-12 h-12 mx-auto rounded-lg animate-spin [animation-duration:3s] ${!isPlaying && "[animation-play-state:paused]"}`}
+                className={`
+          w-12 h-12 mx-auto rounded-lg
+          animate-spin
+          [animation-duration:3s]
+          ${!isPlaying && "[animation-play-state:paused]"}
+        `}
               />
 
+              {/* info */}
               <div className="w-full px-3 flex flex-col">
-                <span className="font-bold">{currentStation.name}</span>
+                {/* animated station name */}
+                <div className="relative h-[22px] overflow-hidden">
+                  <span
+                    key={currentStation.name}
+                    className="
+              absolute left-0 top-0 w-full
+              font-bold
+              animate-[stationIn_.35s_ease]
+            "
+                  >
+                    {currentStation.name}
+                  </span>
+                </div>
 
+                {/* status */}
                 <div className="flex gap-2 items-center">
                   {isPlaying &&
                     (isLoading ? (
@@ -416,20 +436,31 @@ export default function RadioPlayer() {
                 </div>
               </div>
 
+              {/* play button */}
               <button
                 onClick={togglePlay}
-                className="cursor-pointer p-6 text-white rounded-full relative flex items-center justify-center bg-[#F94864]"
+                className="
+          cursor-pointer
+          p-6
+          text-white
+          rounded-full
+          relative
+          flex items-center justify-center
+          bg-[#F94864]
+        "
               >
-                {/* PLAY */}
+                {/* play icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={2}
                   stroke="currentColor"
-                  className={`size-6 absolute transition-all duration-300 ${
-                    isPlaying ? "opacity-0 scale-75" : "opacity-100 scale-100"
-                  }`}
+                  className={`
+            size-6 absolute
+            transition-all duration-300
+            ${isPlaying ? "opacity-0 scale-75" : "opacity-100 scale-100"}
+          `}
                 >
                   <path
                     strokeLinecap="round"
@@ -438,16 +469,18 @@ export default function RadioPlayer() {
                   />
                 </svg>
 
-                {/* PAUSE */}
+                {/* pause icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={2}
                   stroke="currentColor"
-                  className={`size-6 absolute transition-all duration-300 ${
-                    isPlaying ? "opacity-100 scale-100" : "opacity-0 scale-75"
-                  }`}
+                  className={`
+            size-6 absolute
+            transition-all duration-300
+            ${isPlaying ? "opacity-100 scale-100" : "opacity-0 scale-75"}
+          `}
                 >
                   <path
                     strokeLinecap="round"
