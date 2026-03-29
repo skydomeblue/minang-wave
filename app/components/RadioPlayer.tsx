@@ -215,10 +215,10 @@ export default function RadioPlayer() {
             <button
               onClick={checkStations}
               disabled={isCheckingStations}
-              className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full duration-300 transition-all bg-[#F94864] text-white ${
+              className={`flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full duration-300 transition-all bg-[#376CFB] text-white ${
                 isCheckingStations
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[#F94864]/70 cursor-pointer"
+                  : "hover:bg-[#2448A7]/70 cursor-pointer"
               }`}
             >
               <svg
@@ -239,136 +239,143 @@ export default function RadioPlayer() {
             </button>
           </div>
 
-          {isCheckingStations ? (
-            <>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="p-3 rounded-lg bg-white animate-pulse flex items-center gap-3"
-                >
-                  <div className="w-10 h-10 bg-gray-200 rounded" />
+          <div className="flex flex-col gap-2 mb-24">
+            {isCheckingStations ? (
+              <>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="p-3 rounded-lg bg-white animate-pulse flex items-center gap-3"
+                  >
+                    <div className="w-10 h-10 bg-gray-200 rounded" />
 
-                  <div className="flex flex-col gap-1">
-                    <div className="h-3 w-43 bg-gray-200 rounded" />
-                    <div className="h-2 w-28 bg-gray-200 rounded" />
+                    <div className="flex flex-col gap-1">
+                      <div className="h-3 w-43 bg-gray-200 rounded" />
+                      <div className="h-2 w-28 bg-gray-200 rounded" />
+                    </div>
                   </div>
-                </div>
-              ))}
-            </>
-          ) : (
-            stations.map((station) => {
-              const isActive = station.id === currentStation.id;
-              const isOnline = stationStatus[station.id] !== false;
-              return (
-                <button
-                  key={station.id}
-                  disabled={!isOnline}
-                  onClick={() => changeStation(station)}
-                  className={`rounded-lg flex items-center transition-all duration-300 overflow-hidden bg-green-500
+                ))}
+              </>
+            ) : (
+              stations.map((station) => {
+                const isActive = station.id === currentStation.id;
+                const isOnline = stationStatus[station.id] !== false;
+                return (
+                  <button
+                    key={station.id}
+                    disabled={!isOnline}
+                    onClick={() => changeStation(station)}
+                    className={`rounded-lg flex items-center transition-all duration-300 overflow-hidden bg-[#376CFB]
                   ${
                     !isOnline
                       ? "bg-white text-red-500 cursor-not-allowed border border-transparent"
                       : isActive
-                        ? "border-2 border-green-500 font-semibold"
+                        ? "border-2 border-[#376CFB] font-semibold"
                         : "bg-white cursor-pointer border-2 border-transparent"
                   }
                 `}
-                >
-                  {/* icon play slide */}
-                  <div
-                    className={`flex items-center justify-center text-white transition-all duration-300 ease-out overflow-hidden 
+                  >
+                    {/* icon play slide */}
+                    <div
+                      className={`flex items-center justify-center text-white transition-all duration-300 ease-out overflow-hidden 
                                 ${
                                   isActive && isOnline
                                     ? "w-14 opacity-100 translate-x-0 px-3"
                                     : "w-0 opacity-0 -translate-x-3 px-0"
                                 }
                               `}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                      className="size-7"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* konten utama */}
-                  <div className="flex py-2 justify-between w-full px-2 bg-white items-center rounded-l-full">
-                    {/* kiri */}
-                    <div className="flex items-center">
-                      <div className="bg-white border border-[#376CFB] overflow-hidden rounded-full p-2">
-                        <img src={`/img/${station.logo}`} className="w-5 h-5" />
-                      </div>
-
-                      <span className="text-sm flex-1 ml-3">
-                        {station.name}
-                      </span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="size-7"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                        />
+                      </svg>
                     </div>
 
-                    {/* offline text */}
-                    {!isOnline && (
-                      <span className="text-xs ml-2 text-red-500">Offline</span>
-                    )}
-
-                    {/* equalizer */}
-                    {isActive && isOnline && (
-                      <div className="flex items-center gap-1 ml-2">
-                        <div className="flex items-end gap-[3px] h-5">
-                          <span
-                            className={`
-              w-[3px] bg-green-500 rounded-full
-              animate-eq1
-              ${!isPlaying && "[animation-play-state:paused]"}
-            `}
-                          />
-
-                          <span
-                            className={`
-              w-[3px] bg-green-500 rounded-full
-              animate-eq2
-              ${!isPlaying && "[animation-play-state:paused]"}
-            `}
-                          />
-
-                          <span
-                            className={`
-              w-[3px] bg-green-500 rounded-full
-              animate-eq3
-              ${!isPlaying && "[animation-play-state:paused]"}
-            `}
-                          />
-
-                          <span
-                            className={`
-              w-[3px] bg-green-500 rounded-full
-              animate-eq2
-              ${!isPlaying && "[animation-play-state:paused]"}
-            `}
-                          />
-
-                          <span
-                            className={`
-              w-[3px] bg-green-500 rounded-full
-              animate-eq1
-              ${!isPlaying && "[animation-play-state:paused]"}
-            `}
+                    {/* konten utama */}
+                    <div className="flex py-2 justify-between w-full px-2 bg-white items-center rounded-l-full">
+                      {/* kiri */}
+                      <div className="flex items-center">
+                        <div className="bg-white border border-[#376CFB] overflow-hidden rounded-full p-2">
+                          <img
+                            src={`/img/${station.logo}`}
+                            className="w-6 h-6"
                           />
                         </div>
+
+                        <span className="text-sm flex-1 ml-3">
+                          {station.name}
+                        </span>
                       </div>
-                    )}
-                  </div>
-                </button>
-              );
-            })
-          )}
+
+                      {/* offline text */}
+                      {!isOnline && (
+                        <span className="text-xs ml-2 text-red-500">
+                          Offline
+                        </span>
+                      )}
+
+                      {/* equalizer */}
+                      {isActive && isOnline && (
+                        <div className="flex items-center gap-1 ml-2">
+                          <div className="flex items-end gap-[3px] h-5">
+                            <span
+                              className={`
+                                    w-[3px] bg-[#376CFB] rounded-full
+                                    animate-eq1
+                                    ${!isPlaying && "[animation-play-state:paused]"}
+                                  `}
+                            />
+
+                            <span
+                              className={`
+                                    w-[3px] bg-[#376CFB] rounded-full
+                                    animate-eq2
+                                    ${!isPlaying && "[animation-play-state:paused]"}
+                                  `}
+                            />
+
+                            <span
+                              className={`
+                                    w-[3px] bg-[#376CFB] rounded-full
+                                    animate-eq3
+                                    ${!isPlaying && "[animation-play-state:paused]"}
+                                  `}
+                            />
+
+                            <span
+                              className={`
+                                  w-[3px] bg-[#376CFB] rounded-full
+                                  animate-eq2
+                                  ${!isPlaying && "[animation-play-state:paused]"}
+                                `}
+                            />
+
+                            <span
+                              className={`
+                                  w-[3px] bg-[#376CFB] rounded-full
+                                  animate-eq1
+                                  ${!isPlaying && "[animation-play-state:paused]"}
+                                `}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
         </div>
 
         {/* PLAYER */}

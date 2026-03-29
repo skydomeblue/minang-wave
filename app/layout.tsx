@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Minang Wave",
   description: "Badendang dilangik",
+  manifest: "/manifest.json",
 };
 
 export const viewport = {

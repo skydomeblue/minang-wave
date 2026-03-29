@@ -48,4 +48,20 @@ export const stations = [
     logo: "/radio.png",
     nowPlayingApi: "",
   },
+  {
+    id: 8,
+    name: "RRI Pro 1 Bukittinggi",
+    stream:
+      "https://stream-node1.rri.co.id/streaming/16/9216/rribkttinggipro1.mp3",
+    logo: "/radio.png",
+    nowPlayingApi: "",
+  },
+  {
+    id: 9,
+    name: "RRI Pro 2 Bukittinggi",
+    stream:
+      "https://stream-node1.rri.co.id/streaming/16/9216/rribkttinggipro2.mp3",
+    logo: "/radio.png",
+    nowPlayingApi: "",
+  },
 ];
