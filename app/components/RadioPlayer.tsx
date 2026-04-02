@@ -265,15 +265,17 @@ export default function RadioPlayer() {
                     key={station.id}
                     disabled={!isOnline}
                     onClick={() => changeStation(station)}
-                    className={`rounded-lg flex items-center transition-all duration-300 overflow-hidden bg-[#376CFB]
-                  ${
-                    !isOnline
-                      ? "bg-white text-red-500 cursor-not-allowed border border-transparent"
-                      : isActive
-                        ? "border-2 border-[#376CFB] font-semibold"
-                        : "bg-white cursor-pointer border-2 border-transparent"
-                  }
-                `}
+                    className={`rounded-lg flex items-center transition-all duration-300 overflow-hidden border-2 border-transparent
+                                ${
+                                  !isOnline
+                                    ? "bg-white text-red-500 cursor-not-allowed "
+                                    : isActive && isLoading
+                                      ? "bg-yellow-500 border-yellow-500 text-yellow-600"
+                                      : isActive
+                                        ? "bg-[#376CFB] font-semibold text-[#376CFB]"
+                                        : "bg-white cursor-pointer border-transparent"
+                                }
+                              `}
                   >
                     {/* icon play slide */}
                     <div
@@ -326,48 +328,65 @@ export default function RadioPlayer() {
 
                       {/* equalizer */}
                       {isActive && isOnline && (
-                        <div className="flex items-center gap-1 ml-2">
-                          <div className="flex items-end gap-[3px] h-5">
-                            <span
-                              className={`
+                        <div className="flex items-center gap-2 ml-2">
+                          {/* Loading state */}
+                          {isLoading ? (
+                            <div className="flex items-end gap-[3px] h-5">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <span
+                                  key={i}
+                                  className={`w-[3px] h-[3px] bg-yellow-600 rounded-full animate-bounce`}
+                                  style={{
+                                    animationDelay: `${i * 0.12}s`,
+                                    animationDuration: "0.6s",
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          ) : (
+                            /* Equalizer animation */
+                            <div className="flex items-end gap-[3px] h-5">
+                              <span
+                                className={`
                                     w-[3px] bg-[#376CFB] rounded-full
                                     animate-eq1
                                     ${!isPlaying && "[animation-play-state:paused]"}
                                   `}
-                            />
+                              />
 
-                            <span
-                              className={`
+                              <span
+                                className={`
                                     w-[3px] bg-[#376CFB] rounded-full
                                     animate-eq2
                                     ${!isPlaying && "[animation-play-state:paused]"}
                                   `}
-                            />
+                              />
 
-                            <span
-                              className={`
+                              <span
+                                className={`
                                     w-[3px] bg-[#376CFB] rounded-full
                                     animate-eq3
                                     ${!isPlaying && "[animation-play-state:paused]"}
                                   `}
-                            />
+                              />
 
-                            <span
-                              className={`
-                                  w-[3px] bg-[#376CFB] rounded-full
-                                  animate-eq2
-                                  ${!isPlaying && "[animation-play-state:paused]"}
-                                `}
-                            />
+                              <span
+                                className={`
+                                    w-[3px] bg-[#376CFB] rounded-full
+                                    animate-eq2
+                                    ${!isPlaying && "[animation-play-state:paused]"}
+                                  `}
+                              />
 
-                            <span
-                              className={`
-                                  w-[3px] bg-[#376CFB] rounded-full
-                                  animate-eq1
-                                  ${!isPlaying && "[animation-play-state:paused]"}
-                                `}
-                            />
-                          </div>
+                              <span
+                                className={`
+                                    w-[3px] bg-[#376CFB] rounded-full
+                                    animate-eq1
+                                    ${!isPlaying && "[animation-play-state:paused]"}
+                                  `}
+                              />
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
